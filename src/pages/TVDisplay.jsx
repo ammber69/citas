@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTurnos } from '../hooks/useTurnos';
 import { Clock, Car, Settings } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 const TVDisplay = () => {
   const { turnos, loading } = useTurnos();
@@ -70,24 +71,24 @@ const TVDisplay = () => {
   const displayTurnos = [...turnosPublicos, ...turnosPublicos];
 
   return (
-    <div className="h-screen overflow-hidden bg-white text-black p-4 font-sans flex flex-col">
+    <div className="h-screen overflow-hidden bg-white text-black font-sans flex flex-col">
       {/* Header Fijo */}
-      <header className="flex justify-between items-center mb-4 border-b-4 border-gray-100 pb-2 flex-shrink-0">
-        <div className="flex items-center gap-6">
-          <div className="bg-nissan-red px-6 py-2 shadow-xl">
-            <span className="text-3xl font-black tracking-tighter italic text-white">NISSAN</span>
+      <header className="flex justify-between items-center border-b-2 border-gray-100 flex-shrink-0">
+        <div className="flex items-center gap-4">
+          <div className="px-2">
+            <img src={logo} alt="Nissan Logo" className="h-26 w-auto object-contain" />
           </div>
           <Link to="/admin" className="group flex flex-col">
-            <h2 className="text-3xl font-black uppercase tracking-tighter text-black flex items-center gap-2">
+            <h2 className="text-2xl font-black uppercase tracking-tighter text-black flex items-center gap-2 leading-none">
               ESTADO DE SERVICIO
-              <Settings size={18} className="text-gray-200 opacity-0 group-hover:opacity-100 transition-all" />
+              <Settings size={14} className="text-gray-200 opacity-0 group-hover:opacity-100 transition-all" />
             </h2>
-            <span className="text-xs font-black text-nissan-red tracking-[0.3em] uppercase">Innovación que emociona</span>
+            <span className="text-[10px] font-black text-nissan-red tracking-[0.2em] uppercase">Innovación que emociona</span>
           </Link>
         </div>
-        <div className="text-right">
-          <div className="text-5xl font-mono font-black text-black leading-none">{formatTime(currentTime)}</div>
-          <div className="text-gray-400 font-black uppercase tracking-widest text-xs mt-1">Sucursal Córdoba</div>
+        <div className="text-right flex items-baseline gap-4">
+          <div className="text-gray-400 font-black uppercase tracking-widest text-[10px]">Sucursal Córdoba</div>
+          <div className="text-4xl font-mono font-black text-black leading-none">{formatTime(currentTime)}</div>
         </div>
       </header>
 

@@ -1,7 +1,8 @@
 import React, { useRef } from 'react';
-import { Upload, Trash2, FileText } from 'lucide-react';
+import { Upload, Trash2, Database, ChevronRight, CheckCircle2, PlayCircle, Clock } from 'lucide-react';
 import { parseDMSCsv } from '../utils/csvParser';
 import { useTurnos } from '../hooks/useTurnos';
+import logo from '../assets/logo.png';
 
 const AdminPanel = () => {
   const { turnos, loading, addTurnosFromCsv, updateEstado, removeTurno, clearAll } = useTurnos();
@@ -12,12 +13,11 @@ const AdminPanel = () => {
     if (file) {
       try {
         const data = await parseDMSCsv(file);
-        // Al cargar, todos inician "En espera" por defecto
         const dataPreparada = data.map(t => ({ ...t, estado: 'En espera' }));
         addTurnosFromCsv(dataPreparada);
-        alert('Citas cargadas correctamente');
+        alert('¡Citas importadas con éxito!');
       } catch (err) {
-        alert('Error al procesar el archivo');
+        alert('Error al procesar el archivo CSV');
       }
     }
   };
@@ -27,91 +27,137 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-black font-sans">
-      <header className="bg-white border-b-2 border-gray-100 p-4 flex justify-between items-center shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="bg-nissan-red p-2">
-            <span className="font-bold text-xl italic text-white">NISSAN</span>
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans pb-20">
+      {/* Header Premium */}
+      <header className="bg-white border-b border-slate-200 p-4 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="bg-white p-1 rounded-lg">
+              <img src={logo} alt="Nissan Logo" className="h-12 w-auto object-contain" />
+            </div>
+            <div>
+              <h1 className="text-xl font-black tracking-tight text-slate-800 uppercase">Gestión de Taller</h1>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sincronizado en tiempo real</span>
+              </div>
+            </div>
           </div>
-          <h1 className="text-xl font-black tracking-tighter uppercase">Gestión de Citas</h1>
-        </div>
-        <div className="flex gap-4">
-          <button 
-            onClick={() => fileInputRef.current.click()}
-            className="flex items-center gap-2 bg-black hover:bg-nissan-red text-white px-6 py-3 transition-all uppercase text-xs font-black shadow-lg"
-          >
-            <Upload size={16} /> Subir CSV
-          </button>
-          <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".csv" />
-          <button 
-            onClick={clearAll}
-            className="flex items-center gap-2 text-gray-400 hover:text-red-600 px-4 py-2 transition-all uppercase text-xs font-black"
-          >
-            <Trash2 size={16} /> Limpiar Base de Datos
-          </button>
+          
+          <div className="flex gap-3">
+            <button 
+              onClick={() => fileInputRef.current.click()}
+              className="group flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition-all shadow-lg shadow-blue-200 font-bold text-sm"
+            >
+              <Upload size={18} className="group-hover:-translate-y-1 transition-transform" />
+              IMPORTAR DMS (CSV)
+            </button>
+            <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".csv" />
+            
+            <button 
+              onClick={clearAll}
+              className="flex items-center gap-2 bg-white border-2 border-red-50 text-red-500 hover:bg-red-50 px-5 py-3 rounded-xl transition-all font-bold text-sm"
+            >
+              <Database size={18} />
+              LIMPIAR SISTEMA
+            </button>
+          </div>
         </div>
       </header>
 
-      <main className="p-6">
-        <div className="bg-white shadow-2xl rounded-lg overflow-hidden border border-gray-100">
-          <table className="w-full text-left">
-            <thead className="bg-gray-900 text-white">
-              <tr>
-                <th className="p-4 font-black uppercase text-xs">Hora</th>
-                <th className="p-4 font-black uppercase text-xs">Cliente / Vehículo / Asesor</th>
-                <th className="p-4 font-black uppercase text-xs text-center">Seleccionar Estado</th>
-                <th className="p-4 font-black uppercase text-xs"></th>
+      <main className="max-w-7xl mx-auto p-6 mt-4">
+        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-100">
+                <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest">Información de Cita</th>
+                <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest">Vehículo y Asesor</th>
+                <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest text-center">Control de Estado</th>
+                <th className="p-5"></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-50">
               {loading ? (
-                <tr><td colSpan="4" className="p-20 text-center font-bold text-gray-400 animate-pulse">Sincronizando...</td></tr>
+                <tr>
+                  <td colSpan="4" className="p-32 text-center">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
+                      <span className="font-bold text-slate-400 uppercase tracking-widest text-xs">Cargando datos...</span>
+                    </div>
+                  </td>
+                </tr>
               ) : turnos.length === 0 ? (
-                <tr><td colSpan="4" className="p-20 text-center text-gray-300 italic font-bold uppercase tracking-widest">No hay datos en la nube. Sube un CSV.</td></tr>
+                <tr>
+                  <td colSpan="4" className="p-32 text-center text-slate-300">
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="p-6 bg-slate-50 rounded-full">
+                        <Upload size={48} className="opacity-20" />
+                      </div>
+                      <p className="font-bold uppercase tracking-widest text-sm">No hay citas registradas</p>
+                      <button onClick={() => fileInputRef.current.click()} className="text-blue-600 font-bold underline">Haz clic para subir un archivo</button>
+                    </div>
+                  </td>
+                </tr>
               ) : (
                 turnos.sort((a, b) => a.horacita.localeCompare(b.horacita)).map((turno) => (
-                  <tr key={turno.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="p-4">
-                      <div className="font-black text-3xl">{turno.horacita}</div>
+                  <tr key={turno.id} className="hover:bg-blue-50/30 transition-colors">
+                    <td className="p-5">
+                      <div className="flex items-center gap-4">
+                        <div className="bg-slate-100 p-3 rounded-xl font-black text-2xl text-slate-700">
+                          {turno.horacita}
+                        </div>
+                        <div>
+                          <div className="font-black text-lg text-slate-800 uppercase leading-none mb-1">{turno.cliente}</div>
+                          <div className="text-[10px] font-mono font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded inline-block">FOLIO: {turno.folio}</div>
+                        </div>
+                      </div>
                     </td>
-                    <td className="p-4">
-                      <div className="font-black text-xl uppercase leading-tight">{turno.cliente}</div>
-                      <div className="text-sm text-gray-500 font-bold italic">{turno.vehiculo}</div>
-                      <div className="text-xs text-nissan-red font-black uppercase mt-1">Asesor: {turno.asesor}</div>
+                    <td className="p-5">
+                      <div className="font-bold text-slate-700 uppercase">{turno.vehiculo}</div>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span className="text-[11px] font-black text-nissan-red uppercase">Atiende:</span>
+                        <span className="text-[11px] font-bold text-slate-500 uppercase">{turno.asesor}</span>
+                      </div>
                     </td>
-                    <td className="p-4">
-                      <div className="flex justify-center gap-2">
+                    <td className="p-5">
+                      <div className="flex bg-slate-100 p-1.5 rounded-2xl gap-1">
                         <button 
                           onClick={() => setStatus(turno.id, 'En espera')}
-                          className={`flex-1 py-3 px-4 text-[10px] font-black uppercase rounded-sm border-2 transition-all
+                          className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 rounded-xl font-black uppercase text-[10px] transition-all
                             ${turno.estado === 'En espera' 
-                              ? 'bg-yellow-400 border-yellow-500 text-yellow-900 shadow-inner' 
-                              : 'bg-white border-yellow-100 text-yellow-400 hover:bg-yellow-50'}`}
+                              ? 'bg-amber-400 text-amber-900 shadow-md scale-105 z-10' 
+                              : 'text-slate-400 hover:text-amber-500 hover:bg-white'}`}
                         >
-                          En espera
+                          <Clock size={14} /> En espera
                         </button>
+                        
                         <button 
                           onClick={() => setStatus(turno.id, 'En servicio')}
-                          className={`flex-1 py-3 px-4 text-[10px] font-black uppercase rounded-sm border-2 transition-all
+                          className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 rounded-xl font-black uppercase text-[10px] transition-all
                             ${turno.estado === 'En servicio' 
-                              ? 'bg-blue-500 border-blue-600 text-white shadow-inner' 
-                              : 'bg-white border-blue-100 text-blue-400 hover:bg-blue-50'}`}
+                              ? 'bg-blue-600 text-white shadow-md scale-105 z-10' 
+                              : 'text-slate-400 hover:text-blue-500 hover:bg-white'}`}
                         >
-                          En servicio
+                          <PlayCircle size={14} /> En servicio
                         </button>
+                        
                         <button 
                           onClick={() => setStatus(turno.id, 'Vehículo Listo')}
-                          className={`flex-1 py-3 px-4 text-[10px] font-black uppercase rounded-sm border-2 transition-all
+                          className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 rounded-xl font-black uppercase text-[10px] transition-all
                             ${turno.estado === 'Vehículo Listo' 
-                              ? 'bg-green-500 border-green-600 text-white shadow-inner' 
-                              : 'bg-white border-green-100 text-green-400 hover:bg-green-50'}`}
+                              ? 'bg-green-500 text-white shadow-md scale-105 z-10' 
+                              : 'text-slate-400 hover:text-green-500 hover:bg-white'}`}
                         >
-                          Listo
+                          <CheckCircle2 size={14} /> ¡LISTO!
                         </button>
                       </div>
                     </td>
-                    <td className="p-4 text-right">
-                      <button onClick={() => removeTurno(turno.id)} className="text-gray-200 hover:text-red-500 transition-colors p-2">
+                    <td className="p-5 text-right">
+                      <button 
+                        onClick={() => removeTurno(turno.id)} 
+                        className="p-3 text-slate-200 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                        title="Eliminar registro"
+                      >
                         <Trash2 size={20} />
                       </button>
                     </td>

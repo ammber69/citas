@@ -5,6 +5,7 @@ export const parseDMSCsv = (file) => {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
+      encoding: "ISO-8859-1", // Forzar lectura de caracteres en español (Ñ, acentos)
       complete: (results) => {
         const cleanedData = results.data.map((row, index) => {
           // Extraer nombre del cliente
