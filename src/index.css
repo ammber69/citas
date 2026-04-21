@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme {
+  --color-nissan-red: #C3002F;
+  --color-nissan-dark: #FFFFFF; /* Ahora el fondo base es blanco */
+  --color-nissan-gray: #f8f9fa;
+  --color-nissan-medium-gray: #e9ecef;
+  --color-nissan-light-gray: #ffffff;
+  --color-nissan-text: #111111;
+  
+  --font-nissan: "Nissan Brand", "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-nissan-dark text-nissan-text font-nissan antialiased;
+  }
+}
+
+@layer components {
+  .btn-nissan {
+    @apply px-6 py-2 bg-nissan-red text-white font-bold uppercase tracking-wider transition-all hover:bg-red-700 active:scale-95 disabled:bg-gray-600;
+  }
+  
+  .card-nissan {
+    @apply bg-nissan-gray border border-nissan-medium-gray rounded-sm overflow-hidden shadow-lg;
+  }
+
+  .nissan-input {
+    @apply bg-white text-black px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-nissan-red w-full;
+  }
+}
+
+/* Animaciones personalizadas para la TV */
+@keyframes glow {
+  0% { box-shadow: 0 0 5px rgba(195, 0, 47, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(195, 0, 47, 0.6); }
+  100% { box-shadow: 0 0 5px rgba(195, 0, 47, 0.2); }
+}
+
+.animate-glow {
+  animation: glow 2s infinite ease-in-out;
+}
+
+.status-programado { @apply text-gray-400; }
+.status-espera { @apply text-yellow-400 font-bold; }
+.status-servicio { @apply text-blue-400 font-bold animate-pulse; }
+.status-listo { @apply text-green-400 font-bold; }
+.status-retrasado { @apply text-nissan-red font-black uppercase italic; }
