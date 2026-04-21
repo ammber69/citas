@@ -107,8 +107,11 @@ const TVDisplay = () => {
         <div 
           ref={contentRef}
           style={{ 
-            // Invertimos el offset para que el movimiento sea hacia ARRIBA
-            transform: `translateY(${-offset}px)`,
+            // translate3d activa la aceleración por hardware (GPU) para evitar saltitos
+            transform: `translate3d(0, ${-offset}px, 0)`,
+            willChange: 'transform',
+            backfaceVisibility: 'hidden',
+            WebkitFontSmoothing: 'antialiased'
           }}
           className="grid grid-cols-1 gap-4 p-2"
         >
