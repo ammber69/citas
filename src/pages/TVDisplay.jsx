@@ -23,7 +23,7 @@ const TVDisplay = () => {
 
     let animationFrame;
     let currentOffset = 0;
-    const speed = 0.8; // Velocidad de subida
+    const speed = 0.55; // Velocidad ajustada para lectura cómoda
 
     const animate = () => {
       if (!containerRef.current || !contentRef.current) return;
