@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
-import { Upload, Trash2, Database, ChevronRight, CheckCircle2, PlayCircle, Clock } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Upload, Trash2, Database, Tv, PlayCircle, Clock, CheckCircle2 } from 'lucide-react';
 import { parseDMSCsv } from '../utils/csvParser';
 import { useTurnos } from '../hooks/useTurnos';
 import logo from '../assets/logo.png';
@@ -36,30 +37,41 @@ const AdminPanel = () => {
               <img src={logo} alt="Nissan Logo" className="h-12 w-auto object-contain" />
             </div>
             <div>
-              <h1 className="text-xl font-black tracking-tight text-slate-800 uppercase">Gestión de Taller</h1>
-              <div className="flex items-center gap-2">
+              <h1 className="text-xl font-black tracking-tight text-slate-800 uppercase leading-none">Gestión de Taller</h1>
+              <div className="flex items-center gap-2 mt-1">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sincronizado en tiempo real</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sincronizado</span>
               </div>
             </div>
           </div>
           
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
+            {/* BOTÓN VOLVER A TV */}
+            <Link 
+              to="/tv"
+              className="flex items-center gap-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 px-4 py-3 rounded-xl transition-all font-bold text-sm border border-transparent hover:border-blue-100"
+            >
+              <Tv size={18} />
+              <span>PANTALLA TV</span>
+            </Link>
+
+            <div className="h-8 w-px bg-slate-200 mx-2 hidden md:block"></div>
+
             <button 
               onClick={() => fileInputRef.current.click()}
               className="group flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl transition-all shadow-lg shadow-blue-200 font-bold text-sm"
             >
               <Upload size={18} className="group-hover:-translate-y-1 transition-transform" />
-              IMPORTAR DMS (CSV)
+              IMPORTAR
             </button>
             <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".csv" />
             
             <button 
               onClick={clearAll}
-              className="flex items-center gap-2 bg-white border-2 border-red-50 text-red-500 hover:bg-red-50 px-5 py-3 rounded-xl transition-all font-bold text-sm"
+              className="p-3 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+              title="Limpiar Sistema"
             >
-              <Database size={18} />
-              LIMPIAR SISTEMA
+              <Database size={20} />
             </button>
           </div>
         </div>
