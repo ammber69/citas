@@ -13,11 +13,11 @@ const TVDisplay = () => {
 
   // Mensajes para el Ticker de Marketing
   const marketingMessages = [
-    "¡Pregunta por nuestras promociones de alineación y balanceo!",
-    "Café de cortesía y WiFi gratis en nuestra sala de espera.",
-    "Aprovecha 15% de descuento en cambio de aceite sintético.",
-    "NISSAN INTELLIGENT MOBILITY: Innovación que emociona.",
-    "Próximamente: Nuevos modelos 2025 disponibles para prueba de manejo."
+    "Contamos con servicio de alineación y balanceo computarizado de alta precisión.",
+    "Café de cortesía y WiFi gratis en nuestra sala de espera para su comodidad.",
+    "NISSAN INTELLIGENT MOBILITY: Innovación que emociona en cada kilómetro.",
+    "Próximamente: Nuevos modelos 2027 disponibles para prueba de manejo.",
+    "Tu seguridad es nuestra prioridad. Realizamos revisión de 27 puntos de seguridad en cada servicio."
   ];
 
   useEffect(() => {
