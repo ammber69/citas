@@ -176,12 +176,12 @@ const TVDisplay = () => {
         </div>
       </div>
 
-      {/* Ticker de Marketing (Fondo Rojo Nissan) */}
-      <div className="bg-red-600 h-10 flex items-center overflow-hidden flex-shrink-0 z-50 shadow-[0_-4px_20px_rgba(220,38,38,0.2)]">
+      {/* Ticker de Marketing (Fondo Neutro Elegante) */}
+      <div className="bg-slate-900 h-10 flex items-center overflow-hidden flex-shrink-0 z-50 shadow-lg">
         <div className="flex animate-[marquee_60s_linear_infinite] whitespace-nowrap gap-20">
           {[...marketingMessages, ...marketingMessages].map((msg, i) => (
             <span key={i} className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-white">
-              <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+              <span className="w-1.5 h-1.5 bg-red-600 rounded-full"></span>
               {msg}
             </span>
           ))}
