@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.104.0",
     "@tailwindcss/postcss": "^4.2.2",
     "autoprefixer": "^10.5.0",
+    "firebase": "^12.13.0",
     "lucide-react": "^1.8.0",
     "papaparse": "^5.5.3",
     "postcss": "^8.5.10",

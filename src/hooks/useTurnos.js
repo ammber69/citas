@@ -1,58 +1,51 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../utils/supabaseClient';
+import { db } from '../utils/firebaseConfig';
+import { 
+  collection, 
+  query, 
+  orderBy, 
+  onSnapshot, 
+  doc, 
+  updateDoc, 
+  deleteDoc, 
+  getDocs,
+  writeBatch
+} from 'firebase/firestore';
 
 export const useTurnos = () => {
   const [turnos, setTurnos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. Cargar datos iniciales
-  const fetchTurnos = useCallback(async () => {
-    try {
-      const { data, error } = await supabase
-        .from('turnos')
-        .select('*')
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-      setTurnos(data || []);
-    } catch (error) {
-      console.error('Error cargando turnos:', error.message);
-    } finally {
+  // 1 & 2. Cargar datos iniciales y suscribirse a cambios en tiempo real
+  useEffect(() => {
+    const q = query(collection(db, 'turnos'), orderBy('created_at', 'asc'));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const turnosData = [];
+      snapshot.forEach((doc) => {
+        turnosData.push({ id: doc.id, ...doc.data() });
+      });
+      setTurnos(turnosData);
       setLoading(false);
-    }
+    }, (error) => {
+      console.error("Error fetching turnos: ", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    fetchTurnos();
-
-    // 2. Suscribirse a cambios en tiempo real
-    const channel = supabase
-      .channel('public:turnos')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'turnos' }, (payload) => {
-        console.log('Cambio detectado:', payload);
-        
-        if (payload.eventType === 'INSERT') {
-          setTurnos(prev => [...prev, payload.new]);
-        } else if (payload.eventType === 'UPDATE') {
-          setTurnos(prev => prev.map(t => t.id === payload.new.id ? payload.new : t));
-        } else if (payload.eventType === 'DELETE') {
-          setTurnos(prev => prev.filter(t => t.id !== payload.old.id));
-        }
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [fetchTurnos]);
-
-  // 3. Acciones (ahora en la nube)
+  // 3. Acciones (ahora en la nube con Firestore)
   const addTurnosFromCsv = useCallback(async (nuevosTurnos) => {
     try {
       // Filtrar los que ya están activos (En servicio o En espera) para no duplicar
       // En este caso, buscaremos por folio
-      const { data: actuales } = await supabase.from('turnos').select('folio');
-      const foliosExistentes = new Set(actuales?.map(t => t.folio));
+      const querySnapshot = await getDocs(collection(db, 'turnos'));
+      const actuales = [];
+      querySnapshot.forEach((doc) => {
+        actuales.push(doc.data().folio);
+      });
+      const foliosExistentes = new Set(actuales);
       
       const realmenteNuevos = nuevosTurnos
         .filter(t => !foliosExistentes.has(t.folio))
@@ -63,12 +56,17 @@ export const useTurnos = () => {
           horacita: t.horaCita,
           horaentrega: t.horaEntrega || '',
           asesor: t.asesor || '',
-          estado: t.estado || 'Programado'
+          estado: t.estado || 'Programado',
+          created_at: new Date().toISOString()
         }));
 
       if (realmenteNuevos.length > 0) {
-        const { error } = await supabase.from('turnos').insert(realmenteNuevos);
-        if (error) throw error;
+        const batch = writeBatch(db);
+        realmenteNuevos.forEach(turno => {
+          const newTurnoRef = doc(collection(db, 'turnos')); // Crea una referencia de documento con ID autogenerado
+          batch.set(newTurnoRef, turno);
+        });
+        await batch.commit();
       }
     } catch (error) {
       console.error('Error al subir CSV:', error.message);
@@ -83,12 +81,8 @@ export const useTurnos = () => {
       if (nuevoEstado === 'En servicio') updates.inicioservicio = new Date().toLocaleTimeString();
       if (nuevoEstado === 'Listo') updates.finservicio = new Date().toLocaleTimeString();
 
-      const { error } = await supabase
-        .from('turnos')
-        .update(updates)
-        .eq('id', id);
-
-      if (error) throw error;
+      const turnoRef = doc(db, 'turnos', id);
+      await updateDoc(turnoRef, updates);
     } catch (error) {
       console.error('Error al actualizar estado:', error.message);
     }
@@ -96,8 +90,7 @@ export const useTurnos = () => {
 
   const removeTurno = useCallback(async (id) => {
     try {
-      const { error } = await supabase.from('turnos').delete().eq('id', id);
-      if (error) throw error;
+      await deleteDoc(doc(db, 'turnos', id));
     } catch (error) {
       console.error('Error al eliminar:', error.message);
     }
@@ -106,10 +99,12 @@ export const useTurnos = () => {
   const clearAll = useCallback(async () => {
     if (window.confirm('¿Seguro que quieres borrar todos los datos de la nube?')) {
       try {
-        // En Supabase, para borrar todo se suele hacer un delete sin filtros o con un filtro que siempre sea true
-        const { error } = await supabase.from('turnos').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-        if (error) throw error;
-        setTurnos([]);
+        const querySnapshot = await getDocs(collection(db, 'turnos'));
+        const batch = writeBatch(db);
+        querySnapshot.forEach((documento) => {
+          batch.delete(documento.ref);
+        });
+        await batch.commit();
       } catch (error) {
         console.error('Error al limpiar:', error.message);
       }
