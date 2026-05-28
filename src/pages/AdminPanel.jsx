@@ -1,12 +1,13 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Upload, Trash2, Database, Tv, PlayCircle, Clock, CheckCircle2 } from 'lucide-react';
+import { Upload, Trash2, Database, Tv } from 'lucide-react';
 import { parseDMSCsv } from '../utils/csvParser';
 import { useTurnos } from '../hooks/useTurnos';
 import logo from '../assets/logo.png';
+import CarImage from '../components/CarImage';
 
 const AdminPanel = () => {
-  const { turnos, loading, addTurnosFromCsv, updateEstado, removeTurno, clearAll } = useTurnos();
+  const { turnos, loading, addTurnosFromCsv, removeTurno, clearAll } = useTurnos();
   const fileInputRef = useRef(null);
 
   const handleFileUpload = async (e) => {
@@ -14,17 +15,14 @@ const AdminPanel = () => {
     if (file) {
       try {
         const data = await parseDMSCsv(file);
-        const dataPreparada = data.map(t => ({ ...t, estado: 'En espera' }));
+        // Removemos el estado de la inicialización forzada
+        const dataPreparada = data.map(t => ({ ...t }));
         addTurnosFromCsv(dataPreparada);
         alert('¡Citas importadas con éxito!');
       } catch (err) {
         alert('Error al procesar el archivo CSV');
       }
     }
-  };
-
-  const setStatus = (id, newStatus) => {
-    updateEstado(id, newStatus);
   };
 
   return (
@@ -84,7 +82,7 @@ const AdminPanel = () => {
               <tr className="bg-slate-50 border-b border-slate-100">
                 <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest">Información de Cita</th>
                 <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest">Vehículo y Asesor</th>
-                <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest text-center">Control de Estado</th>
+                <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest text-center">Modelo</th>
                 <th className="p-5"></th>
               </tr>
             </thead>
@@ -127,41 +125,13 @@ const AdminPanel = () => {
                     <td className="p-5">
                       <div className="font-bold text-slate-700 uppercase">{turno.vehiculo}</div>
                       <div className="flex items-center gap-1.5 mt-1">
-                        <span className="text-[11px] font-black text-nissan-red uppercase">Atiende:</span>
+                        <span className="text-[11px] font-black text-nissan-red uppercase text-red-600">Atiende:</span>
                         <span className="text-[11px] font-bold text-slate-500 uppercase">{turno.asesor}</span>
                       </div>
                     </td>
                     <td className="p-5">
-                      <div className="flex bg-slate-100 p-1.5 rounded-2xl gap-1">
-                        <button 
-                          onClick={() => setStatus(turno.id, 'En espera')}
-                          className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 rounded-xl font-black uppercase text-[10px] transition-all
-                            ${turno.estado === 'En espera' 
-                              ? 'bg-amber-400 text-amber-900 shadow-md scale-105 z-10' 
-                              : 'text-slate-400 hover:text-amber-500 hover:bg-white'}`}
-                        >
-                          <Clock size={14} /> En espera
-                        </button>
-                        
-                        <button 
-                          onClick={() => setStatus(turno.id, 'En servicio')}
-                          className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 rounded-xl font-black uppercase text-[10px] transition-all
-                            ${turno.estado === 'En servicio' 
-                              ? 'bg-blue-600 text-white shadow-md scale-105 z-10' 
-                              : 'text-slate-400 hover:text-blue-500 hover:bg-white'}`}
-                        >
-                          <PlayCircle size={14} /> En servicio
-                        </button>
-                        
-                        <button 
-                          onClick={() => setStatus(turno.id, 'Vehículo Listo')}
-                          className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 rounded-xl font-black uppercase text-[10px] transition-all
-                            ${turno.estado === 'Vehículo Listo' 
-                              ? 'bg-green-500 text-white shadow-md scale-105 z-10' 
-                              : 'text-slate-400 hover:text-green-500 hover:bg-white'}`}
-                        >
-                          <CheckCircle2 size={14} /> ¡LISTO!
-                        </button>
+                      <div className="h-20 w-32 mx-auto flex items-center justify-center">
+                        <CarImage vehiculo={turno.vehiculo} />
                       </div>
                     </td>
                     <td className="p-5 text-right">

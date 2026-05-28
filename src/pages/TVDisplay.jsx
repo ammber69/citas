@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTurnos } from '../hooks/useTurnos';
-import { Clock, Car, Settings, Tv, CheckCircle2, PlayCircle, Loader2, Info } from 'lucide-react';
+import { Car, Loader2 } from 'lucide-react';
 import logo from '../assets/logo.png';
+import CarImage from '../components/CarImage';
 
 const TVDisplay = () => {
   const { turnos, loading } = useTurnos();
@@ -15,7 +16,7 @@ const TVDisplay = () => {
     "Contamos con servicio de alineación y balanceo computarizado de alta precisión.",
     "Café de cortesía y WiFi gratis en nuestra sala de espera para su comodidad.",
     "NISSAN INTELLIGENT MOBILITY: Innovación que emociona en cada kilómetro.",
-    "Próximamente: Nuevos modelos 2027 disponibles para prueba de manejo.",
+    "Próximamente: Nuevos modelos disponibles para prueba de manejo.",
     "Tu seguridad es nuestra prioridad. Realizamos revisión de 27 puntos de seguridad en cada servicio."
   ];
 
@@ -58,20 +59,13 @@ const TVDisplay = () => {
   };
 
   const turnosPublicos = turnos
-    .filter(t => t.estado !== 'Cancelado')
-    .sort((a, b) => {
-      const orden = { 'En servicio': 1, 'En espera': 2, 'Vehículo Listo': 3 };
-      const estadoA = a.estado || 'En espera';
-      const estadoB = b.estado || 'En espera';
-      if (orden[estadoA] !== orden[estadoB]) return orden[estadoA] - orden[estadoB];
-      return a.horacita.localeCompare(b.horacita);
-    });
+    .sort((a, b) => a.horacita.localeCompare(b.horacita));
 
   const displayTurnos = [...turnosPublicos, ...turnosPublicos];
 
   return (
     <div className="h-screen overflow-hidden bg-[#f4f7f9] text-slate-900 font-sans flex flex-col relative">
-      {/* Header Compacto Premium (Fondo Claro) */}
+      {/* Header Compacto Premium */}
       <header className="flex justify-between items-center px-6 py-3 bg-white border-b-2 border-slate-200 flex-shrink-0 z-50 shadow-md">
         <div className="flex items-center gap-6">
           <div className="bg-white p-1">
@@ -79,7 +73,7 @@ const TVDisplay = () => {
           </div>
           <Link to="/admin" className="group flex flex-col">
             <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-900 flex items-center gap-2 leading-none">
-              Estado de Servicio
+              Control de Citas
               <div className="flex gap-1">
                 <span className="w-1.5 h-1.5 bg-red-600 rounded-full animate-pulse"></span>
               </div>
@@ -102,8 +96,8 @@ const TVDisplay = () => {
       {/* Encabezados de Tabla */}
       <div className="grid grid-cols-12 gap-4 px-10 py-3 bg-slate-800 text-white uppercase text-[11px] font-black tracking-[0.3em] flex-shrink-0 z-40">
         <div className="col-span-2">Hora Cita</div>
-        <div className="col-span-6">Cliente / Vehículo / Asesor</div>
-        <div className="col-span-4 text-center">Estado Actual</div>
+        <div className="col-span-6">Cliente / Asesor</div>
+        <div className="col-span-4 text-center">Vehículo</div>
       </div>
 
       {/* Area de Scroll Infinito Compacta */}
@@ -134,12 +128,7 @@ const TVDisplay = () => {
             displayTurnos.map((turno, idx) => (
               <div 
                 key={`${turno.id}-${idx}`} 
-                className={`grid grid-cols-12 gap-4 px-8 py-5 rounded-2xl transition-all relative overflow-hidden bg-white shadow-sm border border-slate-200
-                  ${turno.estado === 'Vehículo Listo' ? 'border-l-[12px] border-l-green-500' : ''}
-                  ${turno.estado === 'En servicio' ? 'border-l-[12px] border-l-blue-500' : ''}
-                  ${turno.estado === 'En espera' ? 'border-l-[12px] border-l-amber-500' : ''}
-                  ${!turno.estado ? 'border-l-[12px] border-l-slate-300' : ''}
-                `}
+                className="grid grid-cols-12 gap-4 px-8 py-5 rounded-2xl transition-all relative overflow-hidden bg-white shadow-sm border border-slate-200 border-l-[12px] border-l-red-600"
               >
                 <div className="col-span-2 flex items-center">
                   <span className="text-4xl font-mono font-black text-slate-800 tracking-tighter tabular-nums">
@@ -159,15 +148,8 @@ const TVDisplay = () => {
                 </div>
 
                 <div className="col-span-4 flex items-center justify-center">
-                  <div className={`text-2xl font-black uppercase tracking-tighter px-6 py-3 rounded-xl shadow-inner w-full text-center flex items-center justify-center gap-3
-                    ${turno.estado === 'En espera' ? 'text-amber-700 bg-amber-50' : ''}
-                    ${turno.estado === 'En servicio' ? 'text-blue-700 bg-blue-50' : ''}
-                    ${turno.estado === 'Vehículo Listo' ? 'text-green-700 bg-green-50' : ''}
-                  `}>
-                    {turno.estado === 'En espera' && <Clock className="animate-pulse" size={20} />}
-                    {turno.estado === 'En servicio' && <Loader2 className="animate-spin" size={20} />}
-                    {turno.estado === 'Vehículo Listo' && <CheckCircle2 className="animate-bounce" size={20} />}
-                    {turno.estado || 'En espera'}
+                  <div className="h-28 w-full max-w-[240px] flex items-center justify-center">
+                    <CarImage vehiculo={turno.vehiculo} />
                   </div>
                 </div>
               </div>
@@ -176,7 +158,7 @@ const TVDisplay = () => {
         </div>
       </div>
 
-      {/* Ticker de Marketing (Fondo Neutro Elegante) */}
+      {/* Ticker de Marketing */}
       <div className="bg-slate-900 h-10 flex items-center overflow-hidden flex-shrink-0 z-50 shadow-lg">
         <div className="flex animate-[marquee_60s_linear_infinite] whitespace-nowrap gap-20">
           {[...marketingMessages, ...marketingMessages].map((msg, i) => (
@@ -189,13 +171,8 @@ const TVDisplay = () => {
       </div>
 
       {/* Footer Minimalista Compacto */}
-      <footer className="bg-white px-6 py-2 flex justify-between items-center border-t border-slate-200 flex-shrink-0 z-50 text-[9px] font-black uppercase tracking-widest text-slate-400">
-        <div className="flex gap-6">
-          <span className="flex items-center gap-1.5"><div className="w-2 h-2 bg-amber-500 rounded-full"></div> En espera</span>
-          <span className="flex items-center gap-1.5"><div className="w-2 h-2 bg-blue-500 rounded-full"></div> En servicio</span>
-          <span className="flex items-center gap-1.5"><div className="w-2 h-2 bg-green-500 rounded-full"></div> Vehículo Listo</span>
-        </div>
-        <div className="italic text-red-600 opacity-40 tracking-tighter">Nissan Cordoba Experience</div>
+      <footer className="bg-white px-6 py-3 flex justify-center items-center border-t border-slate-200 flex-shrink-0 z-50 text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <div className="italic text-red-600 opacity-60 tracking-tighter">Nissan Cordoba Experience</div>
       </footer>
 
       <style>{`
