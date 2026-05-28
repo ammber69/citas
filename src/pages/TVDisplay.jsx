@@ -149,7 +149,7 @@ const TVDisplay = () => {
 
                 <div className="col-span-4 flex items-center justify-center">
                   <div className="h-28 w-full max-w-[240px] flex items-center justify-center">
-                    <CarImage vehiculo={turno.vehiculo} />
+                    <CarImage vehiculo={turno.vehiculo} modelo={turno.modelo} anio={turno.anio} />
                   </div>
                 </div>
               </div>

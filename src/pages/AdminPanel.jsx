@@ -142,7 +142,7 @@ const AdminPanel = () => {
                     </td>
                     <td className="p-5">
                       <div className="h-20 w-32 mx-auto flex items-center justify-center">
-                        <CarImage vehiculo={turno.vehiculo} />
+                        <CarImage vehiculo={turno.vehiculo} modelo={turno.modelo} anio={turno.anio} />
                       </div>
                     </td>
                     <td className="p-5 text-right">
