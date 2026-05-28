@@ -35,9 +35,30 @@ const CarCatalog = ({ onClose }) => {
     return () => unsub();
   }, []);
 
-  // Comprimir y convertir imagen a Base64
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  // Escuchar eventos de pegado (Ctrl+V) globales cuando el modal está abierto
+  useEffect(() => {
+    const handlePaste = (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          const file = items[i].getAsFile();
+          if (file) {
+            processFile(file);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('paste', handlePaste);
+    return () => {
+      window.removeEventListener('paste', handlePaste);
+    };
+  }, []);
+
+  // Comprimir y procesar el archivo de imagen a Base64
+  const processFile = (file) => {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -54,6 +75,11 @@ const CarCatalog = ({ onClose }) => {
       img.src = event.target.result;
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    processFile(file);
   };
 
   const handleSave = async () => {
@@ -177,7 +203,7 @@ const CarCatalog = ({ onClose }) => {
                   ) : (
                     <div className="flex flex-col items-center text-slate-400">
                       <ImageIcon size={32} className="mb-2" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-center">Clic para buscar imagen</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-center">Clic para buscar o pega directamente (Ctrl+V)</span>
                       <span className="text-[9px] text-slate-300 mt-1">PNG transparente recomendado</span>
                     </div>
                   )}
