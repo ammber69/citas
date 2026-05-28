@@ -1,21 +1,22 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Upload, Trash2, Database, Tv } from 'lucide-react';
+import { Upload, Trash2, Database, Tv, Car } from 'lucide-react';
 import { parseDMSCsv } from '../utils/csvParser';
 import { useTurnos } from '../hooks/useTurnos';
 import logo from '../assets/logo.png';
 import CarImage from '../components/CarImage';
+import CarCatalog from '../components/CarCatalog';
 
 const AdminPanel = () => {
   const { turnos, loading, addTurnosFromCsv, removeTurno, clearAll } = useTurnos();
   const fileInputRef = useRef(null);
+  const [showCatalog, setShowCatalog] = useState(false);
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
       try {
         const data = await parseDMSCsv(file);
-        // Removemos el estado de la inicialización forzada
         const dataPreparada = data.map(t => ({ ...t }));
         addTurnosFromCsv(dataPreparada);
         alert('¡Citas importadas con éxito!');
@@ -44,16 +45,26 @@ const AdminPanel = () => {
           </div>
           
           <div className="flex gap-3 items-center">
+            
+            {/* BOTÓN CATÁLOGO DE AUTOS */}
+            <button 
+              onClick={() => setShowCatalog(true)}
+              className="group flex items-center gap-2 text-slate-600 hover:text-red-600 hover:bg-red-50 px-4 py-3 rounded-xl transition-all font-bold text-sm border border-transparent hover:border-red-100"
+            >
+              <Car size={18} className="group-hover:scale-110 transition-transform" />
+              <span className="hidden md:inline">CATÁLOGO AUTOS</span>
+            </button>
+
+            <div className="h-8 w-px bg-slate-200 mx-2 hidden md:block"></div>
+
             {/* BOTÓN VOLVER A TV */}
             <Link 
               to="/tv"
               className="flex items-center gap-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 px-4 py-3 rounded-xl transition-all font-bold text-sm border border-transparent hover:border-blue-100"
             >
               <Tv size={18} />
-              <span>PANTALLA TV</span>
+              <span className="hidden md:inline">PANTALLA TV</span>
             </Link>
-
-            <div className="h-8 w-px bg-slate-200 mx-2 hidden md:block"></div>
 
             <button 
               onClick={() => fileInputRef.current.click()}
@@ -125,7 +136,7 @@ const AdminPanel = () => {
                     <td className="p-5">
                       <div className="font-bold text-slate-700 uppercase">{turno.vehiculo}</div>
                       <div className="flex items-center gap-1.5 mt-1">
-                        <span className="text-[11px] font-black text-nissan-red uppercase text-red-600">Atiende:</span>
+                        <span className="text-[11px] font-black text-red-600 uppercase">Atiende:</span>
                         <span className="text-[11px] font-bold text-slate-500 uppercase">{turno.asesor}</span>
                       </div>
                     </td>
@@ -150,6 +161,9 @@ const AdminPanel = () => {
           </table>
         </div>
       </main>
+
+      {/* MODAL DEL CATÁLOGO */}
+      {showCatalog && <CarCatalog onClose={() => setShowCatalog(false)} />}
     </div>
   );
 };
