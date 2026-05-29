@@ -53,6 +53,8 @@ export const useTurnos = () => {
           folio: t.folio,
           cliente: t.cliente,
           vehiculo: t.vehiculo,
+          modelo: t.modelo || '',
+          anio: t.anio || '',
           horacita: t.horaCita,
           horaentrega: t.horaEntrega || '',
           asesor: t.asesor || '',

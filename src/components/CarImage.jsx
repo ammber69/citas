@@ -29,7 +29,14 @@ const CarImage = ({ vehiculo, modelo, anio, className = "w-full h-full object-co
       .replace(/\s+\d{4}$/, '') // Quitar año al final si viene junto al nombre
       .trim();
 
-    const anioStr = String(anio || '').trim();
+    // Intentar extraer el año del texto del vehículo si no viene definido
+    let anioStr = String(anio || '').trim();
+    if (!anioStr && vehiculo) {
+      const matches = String(vehiculo).match(/\b(20\d{2})\b/g);
+      if (matches && matches.length > 0) {
+        anioStr = matches[matches.length - 1]; // Tomar el último año encontrado (el año real del auto)
+      }
+    }
 
     // --- BÚSQUEDA POR PRIORIDAD ---
 
