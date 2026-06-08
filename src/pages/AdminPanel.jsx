@@ -1,16 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Upload, Trash2, Database, Tv, Car } from 'lucide-react';
+import { Upload, Trash2, Database, Tv } from 'lucide-react';
 import { parseDMSCsv } from '../utils/csvParser';
 import { useTurnos } from '../hooks/useTurnos';
 import logo from '../assets/logo.png';
-import CarImage from '../components/CarImage';
-import CarCatalog from '../components/CarCatalog';
 
 const AdminPanel = () => {
   const { turnos, loading, addTurnosFromCsv, removeTurno, clearAll } = useTurnos();
   const fileInputRef = useRef(null);
-  const [showCatalog, setShowCatalog] = useState(false);
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -46,17 +43,6 @@ const AdminPanel = () => {
           
           <div className="flex gap-3 items-center">
             
-            {/* BOTÓN CATÁLOGO DE AUTOS */}
-            <button 
-              onClick={() => setShowCatalog(true)}
-              className="group flex items-center gap-2 text-slate-600 hover:text-red-600 hover:bg-red-50 px-4 py-3 rounded-xl transition-all font-bold text-sm border border-transparent hover:border-red-100"
-            >
-              <Car size={18} className="group-hover:scale-110 transition-transform" />
-              <span className="hidden md:inline">CATÁLOGO AUTOS</span>
-            </button>
-
-            <div className="h-8 w-px bg-slate-200 mx-2 hidden md:block"></div>
-
             {/* BOTÓN VOLVER A TV */}
             <Link 
               to="/tv"
@@ -92,15 +78,17 @@ const AdminPanel = () => {
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
                 <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest">Información de Cita</th>
-                <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest">Vehículo y Asesor</th>
-                <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest text-center">Modelo</th>
+                <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest">Asesor</th>
+                <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest">Modelo</th>
+                <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest">Tipo de Servicio</th>
+                <th className="p-5 font-black text-slate-400 uppercase text-[11px] tracking-widest">Color</th>
                 <th className="p-5"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
               {loading ? (
                 <tr>
-                  <td colSpan="4" className="p-32 text-center">
+                  <td colSpan="6" className="p-32 text-center">
                     <div className="flex flex-col items-center gap-4">
                       <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
                       <span className="font-bold text-slate-400 uppercase tracking-widest text-xs">Cargando datos...</span>
@@ -109,7 +97,7 @@ const AdminPanel = () => {
                 </tr>
               ) : turnos.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="p-32 text-center text-slate-300">
+                  <td colSpan="6" className="p-32 text-center text-slate-300">
                     <div className="flex flex-col items-center gap-4">
                       <div className="p-6 bg-slate-50 rounded-full">
                         <Upload size={48} className="opacity-20" />
@@ -134,16 +122,18 @@ const AdminPanel = () => {
                       </div>
                     </td>
                     <td className="p-5">
-                      <div className="font-bold text-slate-700 uppercase">{turno.vehiculo}</div>
-                      <div className="flex items-center gap-1.5 mt-1">
-                        <span className="text-[11px] font-black text-red-600 uppercase">Atiende:</span>
-                        <span className="text-[11px] font-bold text-slate-500 uppercase">{turno.asesor}</span>
-                      </div>
+                      <div className="font-bold text-slate-700 uppercase">{turno.asesor || 'Sin asignar'}</div>
                     </td>
                     <td className="p-5">
-                      <div className="h-20 w-32 mx-auto flex items-center justify-center">
-                        <CarImage vehiculo={turno.vehiculo} modelo={turno.modelo} anio={turno.anio} />
-                      </div>
+                      <div className="font-bold text-slate-700 uppercase">{turno.vehiculo || '-'}</div>
+                    </td>
+                    <td className="p-5">
+                      <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-black uppercase tracking-wider border border-blue-100 inline-block">
+                        {turno.tiposervicio || '-'}
+                      </span>
+                    </td>
+                    <td className="p-5">
+                      <div className="font-bold text-slate-500 uppercase">{turno.color || '-'}</div>
                     </td>
                     <td className="p-5 text-right">
                       <button 
@@ -161,9 +151,6 @@ const AdminPanel = () => {
           </table>
         </div>
       </main>
-
-      {/* MODAL DEL CATÁLOGO */}
-      {showCatalog && <CarCatalog onClose={() => setShowCatalog(false)} />}
     </div>
   );
 };

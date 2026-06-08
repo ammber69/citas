@@ -18,6 +18,9 @@ export const parseDMSCsv = (file) => {
           // Campo combinado para mostrar en pantalla (ej: "VERSA 2025")
           const vehiculo = `${modeloRaw} ${anio}`.trim();
 
+          // Extraer color de forma flexible
+          const color = (row.color || row.nomcolor || row.des_color || row.color_u || row.color_vehi || '').trim();
+
           return {
             id: row.folcita || `temp-${Date.now()}-${index}`,
             folio: row.folcita,
@@ -25,9 +28,10 @@ export const parseDMSCsv = (file) => {
             vehiculo: vehiculo,       // Texto completo para mostrar
             modelo: modeloRaw,        // Solo el modelo (para búsqueda de imagen)
             anio: anio,               // Solo el año (para búsqueda exacta de imagen)
+            color: color,             // Color del vehículo
             horaCita: row.horacita,
             fechaCita: row.fechcita,
-            tipoServicio: row.dtiposerv,
+            tipoServicio: row.dtiposerv || row.tiposervicio || row.tipo_servicio || '',
             asesor: row.nomven || row.NOMVEN || 'Sin asignar',
             estado: 'Programado',
             horaEntrega: null,

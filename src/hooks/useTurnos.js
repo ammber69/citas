@@ -59,6 +59,8 @@ export const useTurnos = () => {
           horaentrega: t.horaEntrega || '',
           asesor: t.asesor || '',
           estado: t.estado || 'Programado',
+          color: t.color || '',
+          tiposervicio: t.tipoServicio || '',
           created_at: new Date().toISOString()
         }));
 
