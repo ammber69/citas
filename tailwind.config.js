@@ -15,7 +15,7 @@ export default {
         }
       },
       fontFamily: {
-        nissan: ['Nissan Brand', 'Inter', 'system-ui', 'sans-serif'],
+        nissan: ['Montserrat', 'Inter', 'system-ui', 'sans-serif'],
       }
     },
   },

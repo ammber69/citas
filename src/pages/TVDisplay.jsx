@@ -118,8 +118,8 @@ const TVDisplay = () => {
         </div>
         
         <div className="flex flex-col items-end" style={{ gap: '0.3vw' }}>
-          <div className="font-mono font-black text-slate-900 leading-none tracking-tighter tabular-nums"
-            style={{ fontSize: '4.5vw' }}
+          <div className="font-black text-slate-900 leading-none tracking-tighter tabular-nums"
+            style={{ fontSize: '4.5vw', fontFamily: "'Montserrat', sans-serif" }}
           >
             {formatTime(currentTime)}
           </div>
@@ -183,8 +183,8 @@ const TVDisplay = () => {
                 style={{ gap: '1vw', padding: '1vw 2vw', borderLeftWidth: '0.6vw', borderLeftColor: '#dc2626' }}
               >
                 <div className="col-span-2 flex items-center">
-                  <span className="font-mono font-black text-slate-800 tracking-tighter tabular-nums"
-                    style={{ fontSize: '2.2vw' }}
+                  <span className="font-black text-slate-800 tracking-tighter tabular-nums"
+                    style={{ fontSize: '2.2vw', fontFamily: "'Montserrat', sans-serif" }}
                   >
                     {turno.horacita}
                   </span>

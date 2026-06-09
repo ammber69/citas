@@ -8,7 +8,7 @@
   --color-nissan-light-gray: #ffffff;
   --color-nissan-text: #111111;
   
-  --font-nissan: "Nissan Brand", "Inter", system-ui, sans-serif;
+  --font-nissan: "Montserrat", "Inter", system-ui, sans-serif;
 }
 
 @layer base {
