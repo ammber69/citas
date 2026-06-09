@@ -61,6 +61,15 @@ const TVDisplay = () => {
     return date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
   };
 
+  const formatDate = (date) => {
+    return date.toLocaleDateString('es-MX', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
   const turnosPublicos = turnos
     .sort((a, b) => a.horacita.localeCompare(b.horacita));
 
@@ -118,6 +127,12 @@ const TVDisplay = () => {
             style={{ fontSize: '0.75vw', letterSpacing: '0.25em' }}
           >
             Hora de Atención
+          </div>
+          <div className="bg-slate-200" style={{ width: '100%', height: '1px', margin: '0.2vw 0' }}></div>
+          <div className="font-black text-slate-500 uppercase"
+            style={{ fontSize: '0.85vw', letterSpacing: '0.2em' }}
+          >
+            {formatDate(currentTime)}
           </div>
         </div>
       </header>
