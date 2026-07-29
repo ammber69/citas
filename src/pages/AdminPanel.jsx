@@ -1,13 +1,19 @@
 import React, { useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { Upload, Trash2, Database, Tv } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Upload, Trash2, Database, Tv, LogOut, MapPin } from 'lucide-react';
 import { parseDMSCsv } from '../utils/csvParser';
 import { useTurnos } from '../hooks/useTurnos';
+import { useAuth } from '../context/AuthContext';
+import { getCiudadBySlug } from '../utils/ciudades';
 import logo from '../assets/logo.png';
 
 const AdminPanel = () => {
-  const { turnos, loading, addTurnosFromCsv, removeTurno, clearAll } = useTurnos();
+  const { userData, logout, isSuperAdmin } = useAuth();
+  const ciudadSlug = userData?.ciudad;
+  const ciudadInfo = getCiudadBySlug(ciudadSlug);
+  const { turnos, loading, addTurnosFromCsv, removeTurno, clearAll } = useTurnos(ciudadSlug);
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -21,6 +27,11 @@ const AdminPanel = () => {
         alert('Error al procesar el archivo CSV');
       }
     }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
   };
 
   return (
@@ -37,15 +48,30 @@ const AdminPanel = () => {
               <div className="flex items-center gap-2 mt-1">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sincronizado</span>
+                <span className="bg-slate-200 w-px h-3"></span>
+                <MapPin size={10} className="text-red-500" />
+                <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">
+                  {ciudadInfo?.nombre || ciudadSlug}
+                </span>
               </div>
             </div>
           </div>
           
           <div className="flex gap-3 items-center">
-            
+            {/* Botón SuperAdmin */}
+            {isSuperAdmin && (
+              <Link 
+                to="/superadmin"
+                className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 px-4 py-3 rounded-xl transition-all font-bold text-sm border border-transparent hover:border-red-100"
+              >
+                🛡️
+                <span className="hidden md:inline">SUPERADMIN</span>
+              </Link>
+            )}
+
             {/* BOTÓN VOLVER A TV */}
             <Link 
-              to="/tv"
+              to={`/tv/${ciudadSlug}`}
               className="flex items-center gap-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 px-4 py-3 rounded-xl transition-all font-bold text-sm border border-transparent hover:border-blue-100"
             >
               <Tv size={18} />
@@ -67,6 +93,15 @@ const AdminPanel = () => {
               title="Limpiar Sistema"
             >
               <Database size={20} />
+            </button>
+
+            {/* Logout */}
+            <button 
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-slate-400 hover:text-red-500 hover:bg-red-50 px-3 py-3 rounded-xl transition-all font-bold text-sm"
+              title="Cerrar sesión"
+            >
+              <LogOut size={18} />
             </button>
           </div>
         </div>

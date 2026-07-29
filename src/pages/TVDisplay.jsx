@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useTurnos } from '../hooks/useTurnos';
 import { useAutoReload } from '../hooks/useAutoReload';
+import { getCiudadBySlug } from '../utils/ciudades';
 import { ClipboardList, Loader2 } from 'lucide-react';
 import logo from '../assets/logo.png';
 
 const TVDisplay = () => {
-  const { turnos, loading } = useTurnos();
+  const { ciudad: ciudadSlug } = useParams();
+  const ciudadInfo = getCiudadBySlug(ciudadSlug);
+  const { turnos, loading } = useTurnos(ciudadSlug);
   const [currentTime, setCurrentTime] = useState(new Date());
   const containerRef = useRef(null);
   const contentRef = useRef(null);
@@ -70,10 +73,25 @@ const TVDisplay = () => {
     });
   };
 
+  const nombreSucursal = ciudadInfo ? `Sucursal ${ciudadInfo.nombre}` : `Sucursal ${ciudadSlug}`;
+  const footerText = ciudadInfo ? `Nissan ${ciudadInfo.nombre} Experience` : `Nissan ${ciudadSlug} Experience`;
+
   const turnosPublicos = turnos
     .sort((a, b) => a.horacita.localeCompare(b.horacita));
 
   const displayTurnos = [...turnosPublicos, ...turnosPublicos];
+
+  // Si la ciudad no existe, mostrar error
+  if (!ciudadInfo) {
+    return (
+      <div className="h-screen bg-slate-900 flex items-center justify-center text-white">
+        <div className="text-center">
+          <h1 className="text-4xl font-black uppercase mb-4">Ciudad no encontrada</h1>
+          <p className="text-slate-400 text-lg">La sucursal "{ciudadSlug}" no existe en el sistema.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen overflow-hidden bg-[#f4f7f9] text-slate-900 font-sans flex flex-col relative">
@@ -111,7 +129,7 @@ const TVDisplay = () => {
               <span className="font-bold text-slate-400 uppercase"
                 style={{ fontSize: '1vw', letterSpacing: '0.15em' }}
               >
-                Sucursal Córdoba
+                {nombreSucursal}
               </span>
             </div>
           </Link>
@@ -254,7 +272,7 @@ const TVDisplay = () => {
         <div className="italic text-red-600 opacity-60 font-black uppercase"
           style={{ fontSize: '0.8vw', letterSpacing: '0.1em' }}
         >
-          Nissan Cordoba Experience
+          {footerText}
         </div>
       </footer>
 
